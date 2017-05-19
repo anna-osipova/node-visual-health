@@ -13,6 +13,7 @@
   "author": "Anna Osipova",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "mongoose": "^4.9.10"
   }
 }
