@@ -25,7 +25,7 @@ const sessionOptions = {
 };
 app.use(session(sessionOptions));
 
-app.set('port', (nconf.get('port') || 5000));
+app.set('port', (process.env.PORT || 5000));
 
 app.use(express.static(__dirname + '/public'));
 
