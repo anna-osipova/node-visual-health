@@ -4,11 +4,14 @@ const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-
-const nconf = require('nconf');
-nconf.argv().env().file('keys.json');
-
 const Promise = require('es6-promise').Promise;
+
+if (typeof process.env.GCLOUD_PROJECT === 'undefined') {
+    var config = require('yaml-env-config')('.');
+    for (let [key, val] of Object.entries(config.app.env_variables)) {
+        process.env[key] = val;
+    }
+}
 
 const app = express();
 
@@ -41,12 +44,7 @@ var User = require('./api/models/userModel');
 var userRoutes = require('./api/routes/userRoutes');
 userRoutes(app);
 
-const user = nconf.get('mongoUser');
-const pass = nconf.get('mongoPass');
-const host = nconf.get('mongoHost');
-const port = nconf.get('mongoPort');
-const db = nconf.get('mongoDatabase');
-const uriString = `mongodb://${user}:${pass}@${host}:${port}/${db}`;
+const uriString = process.env.MONGODB_URI;
 
 mongoose.Promise = Promise;
 mongoose.connect(uriString, function (err, res) {

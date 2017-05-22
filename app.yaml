@@ -1,2 +1,5 @@
 runtime: nodejs
 env: flex
+
+env_variables:
+    MONGODB_URI: 'mongodb://db:qyf3PT6gRPqLQbgA@ds147421.mlab.com:47421/visual-health'
