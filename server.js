@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+const nconf = require('nconf');
+nconf.argv().env().file('keys.json');
+
 const Promise = require('es6-promise').Promise;
 
 const app = express();
@@ -22,7 +25,7 @@ const sessionOptions = {
 };
 app.use(session(sessionOptions));
 
-app.set('port', (process.env.PORT || 5000));
+app.set('port', (nconf.get('port') || 5000));
 
 app.use(express.static(__dirname + '/public'));
 
@@ -38,7 +41,12 @@ var User = require('./api/models/userModel');
 var userRoutes = require('./api/routes/userRoutes');
 userRoutes(app);
 
-var uriString = process.env.MONGODB_URI;
+const user = nconf.get('mongoUser');
+const pass = nconf.get('mongoPass');
+const host = nconf.get('mongoHost');
+const port = nconf.get('mongoPort');
+const db = nconf.get('mongoDatabase');
+const uriString = `mongodb://${user}:${pass}@${host}:${port}/${db}`;
 
 mongoose.Promise = Promise;
 mongoose.connect(uriString, function (err, res) {
