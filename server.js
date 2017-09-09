@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const Promise = require('es6-promise').Promise;
 
-if (typeof process.env.GCLOUD_PROJECT === 'undefined') {
+if (typeof process.env.HEROKU === 'undefined') {
     var config = require('yaml-env-config')('.');
     for (let [key, val] of Object.entries(config.app.env_variables)) {
         process.env[key] = val;
