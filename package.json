@@ -19,10 +19,10 @@
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
     "env-config": "^0.3.0",
-    "es6-promise": "^4.1.0",
+    "es6-promise": "^4.1.1",
     "express": "^4.15.3",
     "express-session": "^1.15.3",
-    "mongoose": "^4.9.10",
+    "mongoose": "^4.11.5",
     "yaml-env-config": "^1.1.0"
   }
 }

@@ -62,6 +62,16 @@ exports.deleteUser = function(req, res) {
         }).catch((err) => sendError(err, res));
 }
 
+exports.getUsers = function(req, res) {
+    User.find({}, function(err, users) {
+        res.json(users.map((user) => {
+            return {
+                username: user.username
+            };
+        }));
+    });
+}
+
 const sendError = function(err, res) {
     switch (err) {
         case ACCESS_DENIED: {

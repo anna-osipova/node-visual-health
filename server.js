@@ -44,6 +44,10 @@ var User = require('./api/models/userModel');
 var userRoutes = require('./api/routes/userRoutes');
 userRoutes(app);
 
+var WeightEntry = require('./api/models/weightEntryModel');
+var weightEntryRoutes = require('./api/routes/weightEntryRoutes');
+weightEntryRoutes(app);
+
 const uriString = process.env.MONGODB_URI;
 
 mongoose.Promise = Promise;
