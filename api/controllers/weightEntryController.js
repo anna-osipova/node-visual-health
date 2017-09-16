@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const WeightEntry = mongoose.model('WeightEntries');
 
+const {
+    sendError,
+    UNAUTHORIZED
+} = require('./errorController');
+
 exports.addWeightEntries = function(req, res) {
     if (!req.session.authenticated) return sendError(UNAUTHORIZED, res);
 
@@ -11,7 +16,7 @@ exports.addWeightEntries = function(req, res) {
         const weightEntry = new WeightEntry({
             value: entry.value,
             date: new Date(entry.startDate),
-            username: req.session.username
+            username: req.session.email
         });
 
         weightEntry.save(function(err, weightEntry) {
@@ -27,7 +32,7 @@ exports.addWeightEntries = function(req, res) {
 exports.getWeightEntries = function(req, res) {
     if (!req.session.authenticated) return sendError(UNAUTHORIZED, res);
 
-    WeightEntry.find({ username: req.session.username }, function(err, entries) {
+    WeightEntry.find({ email: req.session.email }, function(err, entries) {
         res.json(entries);
     });
 }

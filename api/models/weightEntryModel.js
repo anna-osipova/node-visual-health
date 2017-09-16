@@ -10,7 +10,7 @@ var WeightEntrySchema = new Schema({
     date: {
         type: Date
     },
-    username: {
+    email: {
         type: String
     }
 });

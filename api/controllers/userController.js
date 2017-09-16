@@ -2,9 +2,12 @@ const mongoose = require('mongoose');
 
 const User = mongoose.model('Users');
 
-const ACCESS_DENIED = 'Access denied';
-const UNAUTHORIZED = 'Unauthorized';
-const NOT_FOUND = 'User not found';
+const {
+    sendError,
+    ACCESS_DENIED,
+    UNAUTHORIZED,
+    NOT_FOUND
+} = require('./errorController');
 
 exports.createUser = function(req, res) {
     var newUser = new User(req.body);
@@ -15,7 +18,7 @@ exports.createUser = function(req, res) {
 }
 
 exports.login = function(req, res) {
-    User.findOne({ username: req.body.username }).then((user) => {
+    User.findOne({ email: req.body.email }).then((user) => {
         if (user == null) {
             throw 'Auth failed';
         }
@@ -24,7 +27,7 @@ exports.login = function(req, res) {
     }).then((isMatch) => {
         if (isMatch) {
             req.session.authenticated = true;
-            req.session.username = req.body.username;
+            req.session.email = req.body.email;
             res.json({ auth: isMatch });
         } else {
             res.sendStatus(401);
@@ -49,12 +52,12 @@ exports.logout = function(req, res) {
 //exports.updateUser
 
 exports.deleteUser = function(req, res) {
-    User.findOne({ username: req.params.username })
+    User.findOne({ email: req.params.email })
         .then((user) => {
             if (user == null) {
                 throw NOT_FOUND;
             }
-            if (user.username !== req.session.username) {
+            if (user.email !== req.session.email) {
                 throw ACCESS_DENIED;
             }
             user.remove();
@@ -66,21 +69,8 @@ exports.getUsers = function(req, res) {
     User.find({}, function(err, users) {
         res.json(users.map((user) => {
             return {
-                username: user.username
+                email: user.email
             };
         }));
     });
-}
-
-const sendError = function(err, res) {
-    switch (err) {
-        case ACCESS_DENIED: {
-            res.status(403).json({ error: err });
-            break;
-        }
-        case NOT_FOUND:
-        default: {
-            res.status(500).json({ error: err });
-        }
-    }
 }
