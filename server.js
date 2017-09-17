@@ -4,6 +4,7 @@ const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const Promise = require('es6-promise').Promise;
 
 if (typeof process.env.HEROKU === 'undefined') {
@@ -18,6 +19,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors());
 
 const sessionOptions = {
     secret: 'aauZtiaZ]MBLCHATmgcvtJpWvK2Q4=VW',
