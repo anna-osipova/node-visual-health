@@ -15,7 +15,9 @@ module.exports = function(app) {
         .post(userController.logout);
 
     app.route('/users/:username')
-        //.put(userController.updateUser)
         .delete(userController.deleteUser);
+
+    app.route('/users/password')
+        .put(userController.updateUser);
 
 }

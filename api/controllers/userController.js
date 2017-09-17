@@ -49,7 +49,17 @@ exports.logout = function(req, res) {
     });
 }
 
-//exports.updateUser
+exports.updateUser = function(req, res) {
+    User.findOne({ email: req.session.email })
+        .then((user) => {
+            user.password = req.body.password;
+            return user.save();
+        })
+        .then(() => {
+            res.json({ message: 'password updated' });
+        })
+        .catch((err) => sendError(err, res));
+}
 
 exports.deleteUser = function(req, res) {
     User.findOne({ email: req.params.email })
