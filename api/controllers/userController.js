@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 const User = mongoose.model('Users');
 
@@ -28,12 +29,15 @@ exports.login = function(req, res) {
         if (isMatch) {
             req.session.authenticated = true;
             req.session.email = req.body.email;
-            res.json({ auth: isMatch });
+            const token = jwt.sign({
+                email: req.body.email
+            }, 'wAnequ4U_5gakeRA');
+            res.json({ token });
         } else {
             res.sendStatus(401);
         }
     }).catch((err) => {
-        res.json({ error: err });
+        sendError(err, res);
     });
 }
 
