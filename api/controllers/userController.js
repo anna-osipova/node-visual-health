@@ -31,7 +31,7 @@ exports.login = function(req, res) {
             req.session.email = req.body.email;
             const token = jwt.sign({
                 email: req.body.email
-            }, 'wAnequ4U_5gakeRA');
+            }, process.env.JWT_SECRET);
             res.json({ token });
         } else {
             res.sendStatus(401);
@@ -39,6 +39,29 @@ exports.login = function(req, res) {
     }).catch((err) => {
         sendError(err, res);
     });
+}
+
+exports.loginWithToken = function(req, res) {
+    const payload = jwt.verify(req.body.token, process.env.JWT_SECRET);
+    if (!payload || !payload.email) {
+        res.sendStatus(401);
+    }
+
+    User.findOne({ email: payload.email })
+        .then((user) => {
+            if (user == null) {
+                throw 'Auth failed';
+            }
+
+            req.session.authenticated = true;
+            req.session.email = payload.email;
+
+            const token = jwt.sign({
+                email: payload.email
+            }, process.env.JWT_SECRET);
+            res.json({ token });
+        })
+        .catch((err) => sendError(err, res));
 }
 
 exports.logout = function(req, res) {

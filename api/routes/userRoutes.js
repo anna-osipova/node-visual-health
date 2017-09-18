@@ -11,6 +11,9 @@ module.exports = function(app) {
     app.route('/login')
         .post(userController.login);
 
+    app.route('/token')
+        .post(userController.loginWithToken);
+
     app.route('/logout')
         .post(userController.logout);
 
