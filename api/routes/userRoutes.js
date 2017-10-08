@@ -23,4 +23,4 @@ module.exports = function(app) {
     app.route('/users/password')
         .put(userController.updateUser);
 
-}
+};

@@ -13,10 +13,21 @@ const {
 exports.createUser = function(req, res) {
     var newUser = new User(req.body);
     newUser.save(function(err, user) {
-        if (err) res.send(err);
-        res.json(user);
+
+        // TODO: duplicate email error
+        if (err) {
+            res.send(err);
+        } else {
+            req.session.authenticated = true;
+            req.session.email = req.body.email;
+            const token = jwt.sign({
+                email: req.body.email
+            }, process.env.JWT_SECRET);
+
+            res.json({ email: req.body.email, token });
+        }
     });
-}
+};
 
 exports.login = function(req, res) {
     User.findOne({ email: req.body.email }).then((user) => {
@@ -39,7 +50,7 @@ exports.login = function(req, res) {
     }).catch((err) => {
         sendError(err, res);
     });
-}
+};
 
 exports.loginWithToken = function(req, res) {
     const payload = jwt.verify(req.body.token, process.env.JWT_SECRET);
@@ -62,7 +73,7 @@ exports.loginWithToken = function(req, res) {
             res.json({ token });
         })
         .catch((err) => sendError(err, res));
-}
+};
 
 exports.logout = function(req, res) {
     if (!req.session.authenticated) return sendError(UNAUTHORIZED, res);
@@ -74,7 +85,7 @@ exports.logout = function(req, res) {
             sendError(err, res);
         }
     });
-}
+};
 
 exports.updateUser = function(req, res) {
     User.findOne({ email: req.session.email })
@@ -86,7 +97,7 @@ exports.updateUser = function(req, res) {
             res.json({ message: 'password updated' });
         })
         .catch((err) => sendError(err, res));
-}
+};
 
 exports.deleteUser = function(req, res) {
     User.findOne({ email: req.params.email })
@@ -100,7 +111,7 @@ exports.deleteUser = function(req, res) {
             user.remove();
             res.json({ message: 'deleted' })
         }).catch((err) => sendError(err, res));
-}
+};
 
 exports.getUsers = function(req, res) {
     User.find({}, function(err, users) {
@@ -110,4 +121,4 @@ exports.getUsers = function(req, res) {
             };
         }));
     });
-}
+};
