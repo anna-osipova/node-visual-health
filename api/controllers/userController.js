@@ -43,7 +43,7 @@ exports.login = function(req, res) {
             const token = jwt.sign({
                 email: req.body.email
             }, process.env.JWT_SECRET);
-            res.json({ token });
+            res.json({ email: req.body.email, token });
         } else {
             res.sendStatus(401);
         }
@@ -70,7 +70,7 @@ exports.loginWithToken = function(req, res) {
             const token = jwt.sign({
                 email: payload.email
             }, process.env.JWT_SECRET);
-            res.json({ token });
+            res.json({ email: payload.email, token });
         })
         .catch((err) => sendError(err, res));
 };
