@@ -19,7 +19,7 @@ exports.addWeightEntries = function(req, res) {
             username: req.session.email
         });
 
-        weightEntry.save(function(err, weightEntry) {
+        weightEntry.save(function(err) {
             if (!err) addedCount++;
         });
     });
@@ -35,4 +35,4 @@ exports.getWeightEntries = function(req, res) {
     WeightEntry.find({ email: req.session.email }, function(err, entries) {
         res.json(entries);
     });
-}
+};

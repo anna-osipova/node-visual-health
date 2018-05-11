@@ -6,9 +6,10 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const Promise = require('es6-promise').Promise;
+const path = require('path');
 
 if (typeof process.env.HEROKU === 'undefined') {
-    var config = require('yaml-env-config')('.');
+    const config = require('yaml-env-config')('.');
     for (let [key, val] of Object.entries(config.app.env_variables)) {
         process.env[key] = val;
     }
@@ -16,7 +17,9 @@ if (typeof process.env.HEROKU === 'undefined') {
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
@@ -25,42 +28,52 @@ const sessionOptions = {
     secret: 'aauZtiaZ]MBLCHATmgcvtJpWvK2Q4=VW',
     saveUninitialized: false,
     resave: false,
-    //cookie: { maxAge: 360000, secure: false },
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
+    // cookie: { maxAge: 360000, secure: false },
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection
+    })
 };
 app.use(session(sessionOptions));
 
-app.set('port', (process.env.PORT || 5000));
+app.set('port', process.env.PORT || 5000);
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, '/public')));
 
-app.get('/', function(req, res) {
-    if(!req.session.authenticated) {
+app.get('/', function (req, res) {
+    if (!req.session.authenticated) {
         res.status(401);
         return res.send('Not logged in');
     }
     res.send(req.session);
 });
 
-var User = require('./api/models/userModel');
-var userRoutes = require('./api/routes/userRoutes');
+require('./api/models/userModel');
+const userRoutes = require('./api/routes/userRoutes');
 userRoutes(app);
 
-var WeightEntry = require('./api/models/weightEntryModel');
-var weightEntryRoutes = require('./api/routes/weightEntryRoutes');
+require('./api/models/weightEntryModel');
+const weightEntryRoutes = require('./api/routes/weightEntryRoutes');
 weightEntryRoutes(app);
+
+require('./api/models/liftingEntryModel');
+const liftingEntryRoutes = require('./api/routes/liftingEntryRoutes');
+liftingEntryRoutes(app);
+
+require('./api/models/cyclingEntryModel');
+const cyclingEntryRoutes = require('./api/routes/cyclingEntryRoutes');
+cyclingEntryRoutes(app);
 
 const uriString = process.env.MONGODB_URI;
 
 mongoose.Promise = Promise;
-mongoose.connect(uriString, function (err, res) {
+mongoose.connect(uriString, function (err) {
     if (err) {
-        console.log ('ERROR connecting to: ' + uriString + '. ' + err);
+        console.error(`ERROR connecting to MongoDB: ${err}`);
     } else {
-        console.log ('Succeeded connected to: ' + uriString);
+        console.info('Succeeded connected to MongoDB');
     }
 });
 
-app.listen(app.get('port'), function() {
-    console.log('Node app is running on port', app.get('port'));
+app.listen(app.get('port'), function () {
+    console.info('Node app is running on port', app.get('port'));
 });

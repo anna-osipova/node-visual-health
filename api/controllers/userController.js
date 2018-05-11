@@ -10,9 +10,9 @@ const {
     NOT_FOUND
 } = require('./errorController');
 
-exports.createUser = function(req, res) {
+exports.createUser = function (req, res) {
     var newUser = new User(req.body);
-    newUser.save(function(err, user) {
+    newUser.save(function (err) {
 
         // TODO: duplicate email error
         if (err) {
@@ -24,13 +24,18 @@ exports.createUser = function(req, res) {
                 email: req.body.email
             }, process.env.JWT_SECRET);
 
-            res.json({ email: req.body.email, token });
+            res.json({
+                email: req.body.email,
+                token
+            });
         }
     });
 };
 
-exports.login = function(req, res) {
-    User.findOne({ email: req.body.email }).then((user) => {
+exports.login = function (req, res) {
+    User.findOne({
+        email: req.body.email
+    }).then((user) => {
         if (user == null) {
             throw 'Auth failed';
         }
@@ -43,7 +48,10 @@ exports.login = function(req, res) {
             const token = jwt.sign({
                 email: req.body.email
             }, process.env.JWT_SECRET);
-            res.json({ email: req.body.email, token });
+            res.json({
+                email: req.body.email,
+                token
+            });
         } else {
             res.sendStatus(401);
         }
@@ -52,13 +60,15 @@ exports.login = function(req, res) {
     });
 };
 
-exports.loginWithToken = function(req, res) {
+exports.loginWithToken = function (req, res) {
     const payload = jwt.verify(req.body.token, process.env.JWT_SECRET);
     if (!payload || !payload.email) {
         res.sendStatus(401);
     }
 
-    User.findOne({ email: payload.email })
+    User.findOne({
+            email: payload.email
+        })
         .then((user) => {
             if (user == null) {
                 throw 'Auth failed';
@@ -70,15 +80,18 @@ exports.loginWithToken = function(req, res) {
             const token = jwt.sign({
                 email: payload.email
             }, process.env.JWT_SECRET);
-            res.json({ email: payload.email, token });
+            res.json({
+                email: payload.email,
+                token
+            });
         })
         .catch((err) => sendError(err, res));
 };
 
-exports.logout = function(req, res) {
+exports.logout = function (req, res) {
     if (!req.session.authenticated) return sendError(UNAUTHORIZED, res);
 
-    req.session.destroy(function(err) {
+    req.session.destroy(function (err) {
         if (err == null) {
             res.sendStatus(200);
         } else {
@@ -87,20 +100,26 @@ exports.logout = function(req, res) {
     });
 };
 
-exports.updateUser = function(req, res) {
-    User.findOne({ email: req.session.email })
+exports.updateUser = function (req, res) {
+    User.findOne({
+            email: req.session.email
+        })
         .then((user) => {
             user.password = req.body.password;
             return user.save();
         })
         .then(() => {
-            res.json({ message: 'password updated' });
+            res.json({
+                message: 'password updated'
+            });
         })
         .catch((err) => sendError(err, res));
 };
 
-exports.deleteUser = function(req, res) {
-    User.findOne({ email: req.params.email })
+exports.deleteUser = function (req, res) {
+    User.findOne({
+            email: req.params.email
+        })
         .then((user) => {
             if (user == null) {
                 throw NOT_FOUND;
@@ -109,12 +128,14 @@ exports.deleteUser = function(req, res) {
                 throw ACCESS_DENIED;
             }
             user.remove();
-            res.json({ message: 'deleted' })
+            res.json({
+                message: 'deleted'
+            })
         }).catch((err) => sendError(err, res));
 };
 
-exports.getUsers = function(req, res) {
-    User.find({}, function(err, users) {
+exports.getUsers = function (req, res) {
+    User.find({}, function (err, users) {
         res.json(users.map((user) => {
             return {
                 email: user.email

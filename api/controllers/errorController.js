@@ -17,4 +17,4 @@ exports.sendError = function(err, res) {
             res.status(500).json({ error: err });
         }
     }
-}
+};
