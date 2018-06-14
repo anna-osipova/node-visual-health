@@ -22,13 +22,19 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 
 const sessionOptions = {
     secret: 'aauZtiaZ]MBLCHATmgcvtJpWvK2Q4=VW',
     saveUninitialized: false,
     resave: false,
-    // cookie: { maxAge: 360000, secure: false },
+    cookie: {
+        // maxAge: 360000,
+        secure: false
+    },
     store: new MongoStore({
         mongooseConnection: mongoose.connection
     })
@@ -45,6 +51,13 @@ app.get('/', function (req, res) {
         return res.send('Not logged in');
     }
     res.send(req.session);
+});
+
+app.post('/echo', (req, res) => {
+    console.log(req.body);
+    res.json({
+        message: 'success'
+    });
 });
 
 require('./api/models/userModel');
