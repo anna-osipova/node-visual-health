@@ -32,7 +32,7 @@ const sessionOptions = {
     saveUninitialized: false,
     resave: false,
     cookie: {
-        // maxAge: 360000,
+        maxAge: 2147483647,
         secure: false
     },
     store: new MongoStore({
