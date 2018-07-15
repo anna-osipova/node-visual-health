@@ -1,6 +1,5 @@
-'use strict';
 module.exports = function(app) {
-    var userController = require('../controllers/userController');
+    const userController = require('../controllers/userController');
 
     app.route('/users')
         .get(userController.getUsers);

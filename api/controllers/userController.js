@@ -76,7 +76,14 @@ exports.loginWithToken = function (req, res) {
 
             req.session.authenticated = true;
             req.session.email = payload.email;
-
+            return new Promise((resolve, reject) => {
+                req.session.save((err) => {
+                    if (err) {
+                        reject(err)
+                    } else resolve();
+                });
+            })
+        }).then(() => {
             const token = jwt.sign({
                 email: payload.email
             }, process.env.JWT_SECRET);

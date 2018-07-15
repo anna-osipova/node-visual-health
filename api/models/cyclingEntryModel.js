@@ -12,6 +12,8 @@ const CyclingEntrySchema = new Schema({
     totalEnergyBurned: Number,
     totalEnergyBurnedUnit: String,
     sourceName: String
-}, { collection: 'cycling' });
+}, {
+    collection: 'cycling'
+});
 
 module.exports = mongoose.model('CyclingEntries', CyclingEntrySchema);
