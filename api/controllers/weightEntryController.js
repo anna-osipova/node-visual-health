@@ -7,31 +7,71 @@ const {
     UNAUTHORIZED
 } = require('./errorController');
 
-exports.addWeightEntries = function (req, res) {
+exports.addWeightEntries = async function (req, res) {
     if (!req.session.authenticated) return sendError(UNAUTHORIZED, res);
 
     let addedCount = 0;
+    let errorCount = 0;
 
-    req.body.data.forEach(function (entry) {
+    await Promise.all(req.body.data.map(function (entry) {
         const weightEntry = new WeightEntry({
             value: entry.value,
             date: new Date(entry.startDate),
             username: req.session.email
         });
 
-        weightEntry.save(function (err) {
-            if (!err) addedCount++;
-        });
-    });
+        return weightEntry.save()
+            .then(() => {
+                addedCount++;
+            }).catch((err) => {
+                if (err.name === 'MongoError' && err.code === 11000) {
+                    return;
+                }
+                errorCount++;
+                console.error(err);
+            });
+    }));
 
     res.json({
-        addedCount
+        addedCount,
+        errorCount
     });
-}
+};
 
-exports.addWorkflowWeightEntries = function (req, res) {
+exports.addWorkflowWeightEntries = async function (req, res) {
+    const data = JSON.parse(req.body.data).items;
 
-}
+    let addedCount = 0;
+    let errorCount = 0;
+
+    await Promise.all(data.map((entry) => {
+        const weightEntry = new WeightEntry({
+            value: entry.value,
+            date: new Date(entry.date),
+            // TODO: session handling with workflow
+            // username: req.session.email,
+            username: req.header('User-email'),
+            unit: entry.unit,
+            source: entry.source
+        });
+
+        return weightEntry.save()
+            .then(() => {
+                addedCount++;
+            }).catch((err) => {
+                if (err.name === 'MongoError' && err.code === 11000) {
+                    return;
+                }
+                errorCount++;
+                console.error(err);
+            });
+    }));
+
+    res.json({
+        addedCount,
+        errorCount
+    });
+};
 
 exports.getWeightEntries = function (req, res) {
     if (!req.session.authenticated) return sendError(UNAUTHORIZED, res);

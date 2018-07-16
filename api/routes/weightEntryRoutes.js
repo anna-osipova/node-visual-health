@@ -5,7 +5,7 @@ module.exports = function (app) {
         .post(weightEntryController.addWeightEntries)
         .get(weightEntryController.getWeightEntries);
 
-    app.route('/workflow/weight')
+    app.route('/weight/workflow')
         .post(weightEntryController.addWorkflowWeightEntries);
 
 };
