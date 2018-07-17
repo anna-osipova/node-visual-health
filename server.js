@@ -76,6 +76,10 @@ require('./api/models/cyclingEntryModel');
 const cyclingEntryRoutes = require('./api/routes/cyclingEntryRoutes');
 cyclingEntryRoutes(app);
 
+require('./api/models/runningEntryModel');
+const runningEntryRoutes = require('./api/routes/runningEntryRoutes');
+runningEntryRoutes(app);
+
 const uriString = process.env.MONGODB_URI;
 
 mongoose.Promise = Promise;
