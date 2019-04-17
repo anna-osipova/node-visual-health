@@ -39,7 +39,8 @@ const sessionOptions = {
     resave: false,
     cookie: {
         maxAge: 2147483647,
-        secure: false
+        httpOnly: true,
+        path: '/'
     },
     store: new MongoStore({
         mongooseConnection: mongoose.connection
