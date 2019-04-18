@@ -90,7 +90,7 @@ runningEntryRoutes(app);
 const uriString = process.env.MONGODB_URI;
 
 mongoose.Promise = Promise;
-mongoose.connect(uriString, function (err) {
+mongoose.connect(uriString,  { useNewUrlParser: true }, function (err) {
     if (err) {
         console.error(`ERROR connecting to MongoDB: ${err}`);
     } else {
